@@ -48,7 +48,7 @@ export class EditUserComponent {
     if (this.formulaire.valid) {
       this.http
         .post(
-          'http://localhost/backend-angular-ticket-dw1-24/ajout-utilisateur.php',
+          'http://localhost/backend-angular-ticket-dw1-24/add-user.php',
           this.formulaire.value
         )
         .subscribe({
