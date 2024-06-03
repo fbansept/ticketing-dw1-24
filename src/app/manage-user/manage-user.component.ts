@@ -29,12 +29,19 @@ export class ManageUserComponent {
   }
 
   raffraichir() {
-    this.html
-      .get('http://localhost/backend-angular-ticket-dw1-24/user-list.php')
-      .subscribe({
-        next: (result) => (this.userList = result),
-        error: () => alert('Erreur inconnue, contactez votre administrateur'),
-      });
+
+    const jwt = localStorage.getItem("jwt");
+
+    if(jwt) {
+
+      this.html
+        .get('http://localhost/backend-angular-ticket-dw1-24/user-list.php', {'headers': {'Authorization': jwt}})
+        .subscribe({
+          next: (result) => (this.userList = result),
+          error: () => alert('Erreur inconnue, contactez votre administrateur'),
+        });
+
+    }
   }
 
   onSuppressionUtilisateur(idUtilisateur: number) {
