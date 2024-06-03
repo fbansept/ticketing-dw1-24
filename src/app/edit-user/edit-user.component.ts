@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-user',
@@ -33,6 +33,7 @@ export class EditUserComponent {
   formBuilder: FormBuilder = inject(FormBuilder);
   snackBar: MatSnackBar = inject(MatSnackBar);
   router: Router = inject(Router);
+  route: ActivatedRoute = inject(ActivatedRoute);
 
   formulaire: FormGroup = this.formBuilder.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,28 +45,69 @@ export class EditUserComponent {
 
   roleList: string[] = ['Etudiant', 'Gestionnaire', 'Administrateur'];
 
+  userId?: number;
+
+  ngOnInit() {
+    this.route.params.subscribe((parametres) => {
+      //si il y a bien un parametre dans l'URL et que c'est bien un nombre
+      if (parametres['id'] && !isNaN(parametres['id'])) {
+        this.userId = parametres['id'];
+
+        this.formulaire = this.formBuilder.group({
+          email: ['', [Validators.required, Validators.email]],
+          password: ['', []],
+          firstname: ['', [Validators.required]],
+          lastname: ['', [Validators.required]],
+          role: ['Etudiant', [Validators.required]],
+        });
+
+        this.http
+          .get(
+            'http://localhost/backend-angular-ticket-dw1-24/get-user.php?id=' +
+              parametres['id']
+          )
+          .subscribe({
+            next: (utilisateur) => this.formulaire.patchValue(utilisateur),
+            error: (erreur) => alert(erreur.error.message),
+          });
+      } else {
+        this.formulaire = this.formBuilder.group({
+          email: ['', [Validators.required, Validators.email]],
+          password: ['', [Validators.required]],
+          firstname: ['', [Validators.required]],
+          lastname: ['', [Validators.required]],
+          role: ['Etudiant', [Validators.required]],
+        });
+      }
+    });
+  }
+
   onAjoutUtilisateur() {
     if (this.formulaire.valid) {
-      this.http
-        .post(
-          'http://localhost/backend-angular-ticket-dw1-24/add-user.php',
-          this.formulaire.value
-        )
-        .subscribe({
-          next: (resultat) => {
-            this.snackBar.open("L'utilisateur a bien été ajouté", undefined, {
+      const url = this.userId
+        ? 'http://localhost/backend-angular-ticket-dw1-24/edit-user.php?id=' +
+          this.userId
+        : 'http://localhost/backend-angular-ticket-dw1-24/add-user.php';
+
+      this.http.post(url, this.formulaire.value).subscribe({
+        next: (resultat) => {
+          this.snackBar.open(
+            "L'utilisateur a bien été " + (this.userId ? 'modifié' : 'ajouté'),
+            undefined,
+            {
               duration: 3000,
-            });
-            this.router.navigateByUrl('/gestion-utilisateurs');
-          },
-          error: (erreur) => {
-            if (erreur.status == 409) {
-              alert(erreur.error.message);
-            } else {
-              alert('Erreur inconnue, contactez votre administrateur');
             }
-          },
-        });
+          );
+          this.router.navigateByUrl('/gestion-utilisateurs');
+        },
+        error: (erreur) => {
+          if (erreur.status == 409) {
+            alert(erreur.error.message);
+          } else {
+            alert('Erreur inconnue, contactez votre administrateur');
+          }
+        },
+      });
     }
   }
 }
