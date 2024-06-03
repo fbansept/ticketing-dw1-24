@@ -25,11 +25,29 @@ export class ManageUserComponent {
   userList: any = [];
 
   ngOnInit() {
+    this.raffraichir();
+  }
+
+  raffraichir() {
     this.html
       .get('http://localhost/backend-angular-ticket-dw1-24/user-list.php')
       .subscribe({
         next: (result) => (this.userList = result),
         error: () => alert('Erreur inconnue, contactez votre administrateur'),
       });
+  }
+
+  onSuppressionUtilisateur(idUtilisateur: number) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      this.html
+        .delete(
+          'http://localhost/backend-angular-ticket-dw1-24/delete-user.php?id=' +
+            idUtilisateur
+        )
+        .subscribe({
+          next: (result) => this.raffraichir(),
+          error: () => alert('Erreur inconnue, contactez votre administrateur'),
+        });
+    }
   }
 }
