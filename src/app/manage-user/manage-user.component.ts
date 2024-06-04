@@ -29,32 +29,37 @@ export class ManageUserComponent {
   }
 
   raffraichir() {
+    const jwt = localStorage.getItem('jwt');
 
-    const jwt = localStorage.getItem("jwt");
-
-    if(jwt) {
-
+    if (jwt) {
       this.html
-        .get('http://localhost/backend-angular-ticket-dw1-24/user-list.php', {'headers': {'Authorization': jwt}})
+        .get('http://localhost/backend-angular-ticket-dw1-24/user-list.php', {
+          headers: { Authorization: jwt },
+        })
         .subscribe({
           next: (result) => (this.userList = result),
           error: () => alert('Erreur inconnue, contactez votre administrateur'),
         });
-
     }
   }
 
   onSuppressionUtilisateur(idUtilisateur: number) {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-      this.html
-        .delete(
-          'http://localhost/backend-angular-ticket-dw1-24/delete-user.php?id=' +
-            idUtilisateur
-        )
-        .subscribe({
-          next: (result) => this.raffraichir(),
-          error: () => alert('Erreur inconnue, contactez votre administrateur'),
-        });
+      const jwt = localStorage.getItem('jwt');
+
+      if (jwt) {
+        this.html
+          .delete(
+            'http://localhost/backend-angular-ticket-dw1-24/delete-user.php?id=' +
+              idUtilisateur,
+            { headers: { Authorization: jwt } }
+          )
+          .subscribe({
+            next: (result) => this.raffraichir(),
+            error: () =>
+              alert('Erreur inconnue, contactez votre administrateur'),
+          });
+      }
     }
   }
 }

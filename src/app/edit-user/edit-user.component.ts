@@ -61,15 +61,20 @@ export class EditUserComponent {
           role: ['Etudiant', [Validators.required]],
         });
 
-        this.http
-          .get(
-            'http://localhost/backend-angular-ticket-dw1-24/get-user.php?id=' +
-              parametres['id']
-          )
-          .subscribe({
-            next: (utilisateur) => this.formulaire.patchValue(utilisateur),
-            error: (erreur) => alert(erreur.error.message),
-          });
+        const jwt = localStorage.getItem('jwt');
+
+        if (jwt) {
+          this.http
+            .get(
+              'http://localhost/backend-angular-ticket-dw1-24/get-user.php?id=' +
+                parametres['id'],
+              { headers: { Authorization: jwt } }
+            )
+            .subscribe({
+              next: (utilisateur) => this.formulaire.patchValue(utilisateur),
+              error: (erreur) => alert(erreur.error.message),
+            });
+        }
       } else {
         this.formulaire = this.formBuilder.group({
           email: ['', [Validators.required, Validators.email]],
@@ -89,25 +94,36 @@ export class EditUserComponent {
           this.userId
         : 'http://localhost/backend-angular-ticket-dw1-24/add-user.php';
 
-      this.http.post(url, this.formulaire.value).subscribe({
-        next: (resultat) => {
-          this.snackBar.open(
-            "L'utilisateur a bien été " + (this.userId ? 'modifié' : 'ajouté'),
-            undefined,
-            {
-              duration: 3000,
-            }
-          );
-          this.router.navigateByUrl('/gestion-utilisateurs');
-        },
-        error: (erreur) => {
-          if (erreur.status == 409) {
-            alert(erreur.error.message);
-          } else {
-            alert('Erreur inconnue, contactez votre administrateur');
-          }
-        },
-      });
+
+       const jwt = localStorage.getItem('jwt');
+
+        if (jwt) {
+
+          this.http
+            .post(url, this.formulaire.value, {
+              headers: { Authorization: jwt },
+            })
+            .subscribe({
+              next: (resultat) => {
+                this.snackBar.open(
+                  "L'utilisateur a bien été " +
+                    (this.userId ? 'modifié' : 'ajouté'),
+                  undefined,
+                  {
+                    duration: 3000,
+                  }
+                );
+                this.router.navigateByUrl('/gestion-utilisateurs');
+              },
+              error: (erreur) => {
+                if (erreur.status == 409) {
+                  alert(erreur.error.message);
+                } else {
+                  alert('Erreur inconnue, contactez votre administrateur');
+                }
+              },
+            });
+        }
     }
   }
 }
