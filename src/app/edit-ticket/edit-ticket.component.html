@@ -1,0 +1,20 @@
+<form
+  class="formulaire"
+  [formGroup]="formulaire"
+  (ngSubmit)="onAjoutTicket()"
+>
+  <mat-form-field>
+    <mat-label>Titre</mat-label>
+    <input matInput formControlName="nom" />
+    <mat-error>Ce champs est obligatoire</mat-error>
+  </mat-form-field>
+
+  <mat-form-field>
+    <mat-label>Message</mat-label>
+    <textarea matInput formControlName="contenu"></textarea>
+    <mat-error>Ce champs est obligatoire</mat-error>
+  </mat-form-field>
+
+
+  <button mat-raised-button color="primary">Ajouter le ticket</button>
+</form>

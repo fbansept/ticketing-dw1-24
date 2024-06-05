@@ -1,1 +1,97 @@
-<p>home works!</p>
+<h1>Liste des tickets</h1>
+
+<a mat-raised-button color="primary" [routerLink]="['/add-ticket']">
+  Ajouter un nouveau ticket
+</a>
+
+<div class="mat-elevation-z8">
+  <table mat-table [dataSource]="ticketList">
+    <ng-container matColumnDef="titre">
+      <th mat-header-cell *matHeaderCellDef>Titre</th>
+      <td mat-cell *matCellDef="let ticket">
+        {{ ticket.nom }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="createur">
+      <th mat-header-cell *matHeaderCellDef>Créateur</th>
+      <td mat-cell *matCellDef="let ticket">
+        {{ ticket.firstname }} {{ ticket.lastname }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date_creation">
+      <th mat-header-cell *matHeaderCellDef>Date de création</th>
+      <td mat-cell *matCellDef="let ticket">
+        {{ ticket.date_creation | date : "dd/mm/yyyy" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="date_resolution">
+      <th mat-header-cell *matHeaderCellDef>Date de résolution</th>
+      <td mat-cell *matCellDef="let ticket">
+        {{ ticket.date_resolution | date : "dd/mm/yyyy" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nombre_message">
+      <th mat-header-cell *matHeaderCellDef>Nombre de messages</th>
+      <td mat-cell *matCellDef="let ticket">
+        {{ ticket.nombre_message }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="statut">
+      <th mat-header-cell *matHeaderCellDef>Statut</th>
+      <td mat-cell *matCellDef="let ticket">
+        {{ ticket.date_resolution != null ? "Résolue" : "En cours" }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let ticket">
+        @if (ticket.date_resolution == null) {
+        <a
+          mat-mini-fab
+          color="accent"
+          [routerLink]="['/info-ticket', ticket.id]"
+        >
+          <mat-icon>edit</mat-icon>
+        </a>
+        }
+      </td>
+    </ng-container>
+
+    <tr
+      mat-header-row
+      *matHeaderRowDef="[
+        'titre',
+        'createur',
+        'date_creation',
+        'date_resolution',
+        'nombre_message',
+        'statut',
+        'actions'
+      ]"
+    ></tr>
+    <tr
+      mat-row
+      *matRowDef="
+        let row;
+        columns: [
+          'titre',
+          'createur',
+          'date_creation',
+          'date_resolution',
+          'nombre_message',
+          'statut',
+          'actions'
+        ]
+      "
+    ></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons>
+  </mat-paginator>
+</div>

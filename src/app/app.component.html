@@ -22,14 +22,21 @@
 
         @if (authentification.role == "Administrateur") {
 
-          <li class="nav-item">
-            <a
-              class="nav-link"
-              routerLink="/gestion-utilisateurs"
-              routerLinkActive="active"
-              >Gestion utilisateurs</a
-            >
-          </li>
+        <li class="nav-item">
+          <a
+            class="nav-link"
+            routerLink="/gestion-utilisateurs"
+            routerLinkActive="active"
+            >Gestion utilisateurs</a
+          >
+        </li>
+        } @if (authentification.role == null) {
+
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/connexion" routerLinkActive="active"
+            >Connexions</a
+          >
+        </li>
         }
       </ul>
       <form class="d-flex" role="search">

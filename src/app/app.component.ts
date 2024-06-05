@@ -11,4 +11,8 @@ import { AuthentificationService } from './authentification.service';
 })
 export class AppComponent {
   authentification: AuthentificationService = inject(AuthentificationService);
+
+  ngOnInit() {
+    this.authentification.getInfoFromJwtLocalStorage();
+  }
 }
